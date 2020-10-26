@@ -2,7 +2,10 @@
 title: "1020_datawranglingII_m4"
 author: "Yutian Luo"
 date: "10/21/2020"
-output: html_document
+output: 
+  html_document:
+    toc: true
+    float_toc: true
 ---
 
 ```{r setup, include=FALSE}
@@ -101,7 +104,87 @@ star_war_df =
 ```
 
 
+learning assesment
 
+scrape data from "https://www.amazon.com/product-reviews/B00005JNBQ/ref=cm_cr_getr_d_paging_btm_prev_1?ie=UTF8&reviewerType=avp_only_reviews&sortBy=recent&pageNumber=1", get most recent review's titles
+
+```{r}
+napolean_url = "https://www.amazon.com/product-reviews/B00005JNBQ/ref=cm_cr_getr_d_paging_btm_prev_1?ie=UTF8&reviewerType=avp_only_reviews&sortBy=recent&pageNumber=1"
+
+napolean = read_html(napolean_url)
+
+napolean_title = 
+  napolean %>% 
+  html_nodes(css = ".a-text-bold span") %>% 
+  html_text()
+
+napolean_rating = 
+  napolean %>% 
+  html_nodes(css = "#cm_cr-review_list .review-rating") %>% 
+  html_text()
+
+napolean_text = 
+  napolean %>% 
+  html_nodes(css = ".review-text-content span") %>% 
+  html_text()
+
+napolean_df = 
+  tibble(
+    titles = napolean_title,
+    rating = napolean_rating,
+    texts = napolean_text
+  )
+
+knitr::kable(napolean_df)
+```
+
+
+
+## API && web scraping data
+
+1. get()
+2.content()
+3. jsonlite::fromJSON()
+
+```{r}
+# from csv
+nyc_water = 
+  GET("https://data.cityofnewyork.us/resource/ia2d-e54m.csv") %>% 
+  content("parsed")
+
+# from json
+nyc_water = 
+  GET("https://data.cityofnewyork.us/resource/ia2d-e54m.json") %>% 
+  content("text") %>% 
+  jsonlite::fromJSON() %>% 
+  as_tibble()
+```
+
+
+### cdc RFSS example
+
+1. API limitations: ie, default query rows
+2. read API Docs and R docs to solve issues
+
+```{r}
+cdc_2010 = 
+  GET("https://chronicdata.cdc.gov/resource/acme-vg9e.csv", 
+      query = list("$limit" = 50000)) %>% 
+  content("parsed")
+```
+
+
+# miscellaneous web data
+
+```{r}
+pokiemon = 
+  GET("https://pokeapi.co/api/v2/pokemon/1") %>% 
+  content
+
+pokiemon$weight
+pokiemon$height
+
+```
 
 
 
