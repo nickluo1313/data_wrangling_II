@@ -72,10 +72,32 @@ nyc_living
 
 ## 3. CSS selector
 
+1. html_nodes(css = "...")
+2. html_text        grab text
 
 ```{r}
-star_war = 
-  read_html("https://www.imdb.com/list/ls070150896/")
+star_war_titles = 
+  read_html("https://www.imdb.com/list/ls070150896/") %>% 
+  html_nodes(css = ".lister-item-header a") %>% 
+  html_text()
+
+star_war_groos = 
+  read_html("https://www.imdb.com/list/ls070150896/") %>% 
+  html_nodes(css = ".text-muted .ghost~ .text-muted+ span") %>% 
+  html_text()
+
+run_time = 
+  read_html("https://www.imdb.com/list/ls070150896/") %>% 
+  html_nodes(css = ".runtime") %>% 
+  html_text()
+
+# comibine into one df
+star_war_df = 
+  tibble(
+    name = star_war_titles,
+    gross_rev = star_war_groos,
+    run_time = run_time
+  )
 ```
 
 
